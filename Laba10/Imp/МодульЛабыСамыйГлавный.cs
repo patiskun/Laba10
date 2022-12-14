@@ -1,5 +1,7 @@
 ﻿using LanguageExt.Pretty;
 using Spectre.Console;
+using System.Data.Common;
+using System.Reflection;
 
 namespace Laba10.Imp;
 
@@ -16,21 +18,24 @@ public class МодульЛабыСамыйГлавный
                 Header = new PanelHeader("Меню", Justify.Center)
             };
             
-            AnsiConsole.Write(menuPanel);
-    
+            typeof(AnsiConsole).GetMethod("Write", BindingFlags.Public | BindingFlags.Static, null, new Type[] {typeof(Panel)}, null)!
+                .Invoke(null, new object[] {menuPanel});
+
             var выборМеню = string.Empty;
 
             while (ВсеЛиВерно(выборМеню) is not true)
             {
-                AnsiConsole.WriteLine("Выберите нужный номер из меню.");
-                выборМеню = Console.ReadLine()?.Trim();
+                typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                    .Invoke(null, new object[] { "Выберите нужный номер из меню." });
+                выборМеню = (string)typeof(Console).GetMethod("ReadLine", new Type[] {}, null)!
+                    .Invoke(null, new object[] {})?.ToString().Trim();
             }
 
             switch (выборМеню)
             {
                 case "1":
                 {
-                    var табличка = new Table();
+                    var табличка = Activator.CreateInstance<Table>();
 
                     табличка.AddColumn(new TableColumn("Айди").LeftAligned().Width(20));
                     табличка.AddColumn(new TableColumn("ФИО").LeftAligned());
@@ -40,15 +45,16 @@ public class МодульЛабыСамыйГлавный
 
                     foreach (var чел in челы)
                     {
-                        табличка.AddRow(чел.Айди.ToString(), чел.Фио, чел.АйдиКартка.ToString(), Картка.СюдаБыстро(чел.АйдиКартка).Баллы.ToString());
+                       табличка.AddRow(чел.Айди.ToString(), чел.Фио, чел.АйдиКартка.ToString(), Картка.СюдаБыстро(чел.АйдиКартка).Баллы.ToString());
                     }
 
-                    AnsiConsole.Write(табличка);
-                }
+                    typeof(AnsiConsole).GetMethod("Write", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Table) }, null)
+                            .Invoke(null, new object[] { табличка });
+                    }
                     break;
                 case "2":
                 {
-                    var табличка = new Table();
+                    var табличка = Activator.CreateInstance<Table>();
 
                     табличка.AddColumn(new TableColumn("Айди").LeftAligned().Width(20));
                     табличка.AddColumn(new TableColumn("Баллы").LeftAligned());
@@ -59,7 +65,8 @@ public class МодульЛабыСамыйГлавный
                         табличка.AddRow(картка.Айди.ToString(), картка.Баллы.ToString());
                     }
 
-                    AnsiConsole.Write(табличка);
+                    typeof(AnsiConsole).GetMethod("Write", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(Table) }, null)
+                            .Invoke(null, new object[] { табличка });
                 }
                     break;
                 case "3":
@@ -68,8 +75,12 @@ public class МодульЛабыСамыйГлавный
 
                     while (string.IsNullOrWhiteSpace(фио))
                     {
-                        AnsiConsole.WriteLine("Введите ФИО пользователя:");
-                        фио = Console.ReadLine()?.Trim();
+
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Введите ФИО пользователя:" });
+
+                        фио = (string)typeof(Console).GetMethod("ReadLine", new Type[] {}, null)!
+                                .Invoke(null, new object[] {})?.ToString().Trim();
                     }
                     
                     new ПользовательДТО_АДО { Айди = Random.Shared.Next(), Фио = фио }.СеризироватьТуИксСэМэль();
@@ -81,15 +92,19 @@ public class МодульЛабыСамыйГлавный
                     int узерАйдиИнт;
                     while (!int.TryParse(узерАйди, out узерАйдиИнт))
                     {
-                        AnsiConsole.WriteLine("Введите Айди пользователя:");
-                        узерАйди = Console.ReadLine()?.Trim();
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Введите Айди пользователя:" });
+                        узерАйди = (string)typeof(Console).GetMethod("ReadLine", new Type[] { }, null)!
+                                .Invoke(null, new object[] { })?.ToString().Trim();
+
                     }
 
                     var пользователь = ПользовательДТО_АДО.СюдаВсе().FirstOrDefault(x => x.Айди == узерАйдиИнт);
                     
                     if (пользователь == null)
                     {
-                        AnsiConsole.WriteLine("Такого пользователя нету!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Такого пользователя нету!" });
                         continue;
                     }
 
@@ -104,11 +119,13 @@ public class МодульЛабыСамыйГлавный
                         пользователь.СеризироватьТуИксСэМэль();
                         карткаНовая.СеризироватьТуИксСэМэль();
                         
-                        AnsiConsole.WriteLine("Карточка добавлена!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Карточка добавлена!" });
                     }
                     else
                     {
-                        AnsiConsole.WriteLine("Карточка уже существует!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Карточка уже существует!" });
                     }
                 }
                     break;
@@ -118,28 +135,34 @@ public class МодульЛабыСамыйГлавный
                     int карткаАйдиИнт;
                     while (!int.TryParse(карткаАйди, out карткаАйдиИнт))
                     {
-                        AnsiConsole.WriteLine("Введите Айди карточки:");
-                        карткаАйди = Console.ReadLine()?.Trim();
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Введите Айди карточки:" });
+                        карткаАйди = (string)typeof(Console).GetMethod("ReadLine", new Type[] { }, null)!
+                                .Invoke(null, new object[] { })?.ToString().Trim();
                     }
 
                     var картка = Картка.СюдаБыстроВсеДон().FirstOrDefault(x => x.Айди == карткаАйдиИнт);
                     
                     if (картка == null)
                     {
-                        AnsiConsole.WriteLine("Такой карточки нет!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Такой карточки нет!" });
                         continue;
                     }
                     
-                    AnsiConsole.WriteLine("Введите баллы:");
+                    typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                            .Invoke(null, new object[] { "Введите баллы:" });
                     if (int.TryParse(Console.ReadLine(), out var баллы))
                     {
                         картка.МинусБаллы(баллы);
                         картка.СеризироватьТуИксСэМэль();
-                        AnsiConsole.WriteLine("Баллы успешно списаны!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Баллы успешно списаны!" });
                     }
                     else
                     {
-                        AnsiConsole.WriteLine("Вы ввели неверное значение баллов!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Вы ввели неверное значение баллов!" });
                     }
                 }
                     break;
@@ -149,28 +172,35 @@ public class МодульЛабыСамыйГлавный
                     int карткаАйдиИнт;
                     while (!int.TryParse(карткаАйди, out карткаАйдиИнт))
                     {
-                        AnsiConsole.WriteLine("Введите Айди карточки:");
-                        карткаАйди = Console.ReadLine()?.Trim();
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Введите Айди карточки:" });
+                        карткаАйди = (string)typeof(Console).GetMethod("ReadLine", new Type[] { }, null)!
+                                .Invoke(null, new object[] { })?.ToString().Trim();
                     }
 
                     var картка = Картка.СюдаБыстроВсеДон().FirstOrDefault(x => x.Айди == карткаАйдиИнт);
                     
                     if (картка == null)
                     {
-                        AnsiConsole.WriteLine("Такой карточки нет!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Такой карточки нет!" });
                         continue;
                     }
 
-                    AnsiConsole.WriteLine("Введите баллы:");
+                    typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                            .Invoke(null, new object[] { "Введите баллы:" });
+
                     if (int.TryParse(Console.ReadLine(), out var баллы))
                     {
                         картка.ПлюсБаллы(баллы);
                         картка.СеризироватьТуИксСэМэль();
-                        AnsiConsole.WriteLine("Баллы успешно списаны!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Баллы успешно списаны!" });
                     }
                     else
                     {
-                        AnsiConsole.WriteLine("Вы ввели неверное значение баллов!");
+                        typeof(AnsiConsole).GetMethod("WriteLine", BindingFlags.Public | BindingFlags.Static, null, new Type[] { typeof(string) }, null)!
+                                .Invoke(null, new object[] { "Вы ввели неверное значение баллов!" });
                     }
                 }
                     break;
